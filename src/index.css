@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Utility: clamp multiline text to 10 lines without requiring Tailwind plugin */
+.line-clamp-10 {
+	display: -webkit-box;
+	line-clamp: 10;
+	-webkit-line-clamp: 10;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}

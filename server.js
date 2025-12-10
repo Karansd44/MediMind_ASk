@@ -6,6 +6,17 @@ require('dotenv').config();
 const app = express();
 const port = process.env.REACT_APP_SERVER_PORT || 3005;
 
+// Prevent server from crashing on uncaught errors
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  // Don't exit, keep server running
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Don't exit, keep server running
+});
+
 // Add request logging middleware
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
@@ -195,6 +206,29 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server running on port ${port}`);
+  console.log(`Health check: http://localhost:${port}/health`);
+  console.log('Press Ctrl+C to stop the server');
+  console.log('Server is running continuously...');
+});
+
+// Keep server alive
+server.keepAliveTimeout = 61000;
+server.headersTimeout = 65000;
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+  });
+});
+
+process.on('SIGINT', () => {
+  console.log('\nSIGINT signal received: closing HTTP server');
+  server.close(() => {
+    console.log('HTTP server closed');
+    process.exit(0);
+  });
 });

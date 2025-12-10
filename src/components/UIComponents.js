@@ -40,9 +40,14 @@ export const Tag = ({
 };
 
 export const CircularProgress = ({ percentage, color, size = 80 }) => {
+  // Ensure percentage is a valid number between 0 and 100
+  const validPercentage = typeof percentage === 'number' && !isNaN(percentage) 
+    ? Math.min(Math.max(percentage, 0), 100) 
+    : 0;
+    
   const radius = size / 2 - 8;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (percentage / 100) * circumference;
+  const offset = circumference - (validPercentage / 100) * circumference;
 
   return (
     <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
@@ -71,7 +76,7 @@ export const CircularProgress = ({ percentage, color, size = 80 }) => {
           transition={{ duration: 1, ease: "easeOut" }}
         />
       </svg>
-      <span className="absolute text-lg font-bold text-gray-700">{`${Math.round(percentage)}%`}</span>
+      <span className="absolute text-lg font-bold text-gray-700">{`${Math.round(validPercentage)}%`}</span>
     </div>
   );
 };

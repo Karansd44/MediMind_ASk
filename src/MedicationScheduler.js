@@ -28,10 +28,13 @@ const MedicationScheduler = ({ disease, onClose }) => {
           }
         };
         const apiKey = process.env.REACT_APP_GEMINI_API_KEY_ALT;
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent`;
         const response = await fetch(apiUrl, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-goog-api-key': apiKey
+          },
           body: JSON.stringify(payload)
         });
         const result = await response.json();
@@ -76,39 +79,81 @@ const MedicationScheduler = ({ disease, onClose }) => {
     const medsText = meds.map(m => `${m.name} (${m.dosage || 'dose unknown'})`).join('; ');
     const prompt = `You are a clinical decision support assistant. Given the following list of medications: ${medsText}. Analyze potential drug-drug interactions and combined side effects. Return a JSON object with keys: \n- "safe": boolean (true if no clinically significant interactions),\n- "interactions": array of objects with {"medications": ["A","B"], "interaction": "short description", "severity": "low|moderate|high"},\n- "recommendations": string (what to change or monitoring suggestions).\nOnly return valid JSON.`;
 
-    try {
-      let chatHistory = [];
-      chatHistory.push({ role: 'user', parts: [{ text: prompt }] });
-      const payload = { contents: chatHistory, generationConfig: { responseMimeType: 'application/json' } };
-      const apiKey = process.env.REACT_APP_GEMINI_API_KEY_ALT;
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const result = await response.json();
+    const apiKey = process.env.REACT_APP_GEMINI_API_KEY_ALT;
+    
+    // Try multiple models in case one fails
+    // Try multiple models in case one fails
+    const modelsToTry = [
+      'gemini-2.0-flash',
+      'gemini-1.5-flash',
+      'gemini-2.5-flash-preview-05-20'
+    ];
 
-      if (result.candidates && result.candidates.length > 0 &&
-        result.candidates[0].content && result.candidates[0].content.parts &&
-        result.candidates[0].content.parts.length > 0) {
-        const jsonText = result.candidates[0].content.parts[0].text;
-        try {
-          const parsed = JSON.parse(jsonText);
-          setAnalysisResult(parsed);
-        } catch (err) {
-          console.warn('Could not parse analysis JSON:', err, jsonText);
-          setAnalysisResult({ safe: false, interactions: [], recommendations: 'Could not parse AI response. Please review manually.' });
+    let lastError = null;
+
+    for (let i = 0; i < modelsToTry.length; i++) {
+      const modelName = modelsToTry[i];
+      try {
+        console.log(`Trying model: ${modelName}`);
+        let chatHistory = [];
+        chatHistory.push({ role: 'user', parts: [{ text: prompt }] });
+        const payload = { contents: chatHistory, generationConfig: { responseMimeType: 'application/json' } };
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`;
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'X-goog-api-key': apiKey
+          },
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+
+        // Log the full response for debugging
+        console.log('Gemini API Response:', result);
+
+        // Check for API errors or blocked content
+        if (result.error) {
+          console.error('Gemini API Error:', result.error);
+          lastError = result.error.message || 'Unknown error';
+          continue; // Try next model
+        } else if (result.promptFeedback && result.promptFeedback.blockReason) {
+          console.warn('Content blocked:', result.promptFeedback);
+          lastError = `Content blocked: ${result.promptFeedback.blockReason}`;
+          continue; // Try next model
+        } else if (result.candidates && result.candidates.length > 0 &&
+          result.candidates[0].content && result.candidates[0].content.parts &&
+          result.candidates[0].content.parts.length > 0) {
+          const jsonText = result.candidates[0].content.parts[0].text;
+          try {
+            const parsed = JSON.parse(jsonText);
+            setAnalysisResult(parsed);
+            setIsAnalyzing(false);
+            return; // Success! Exit the function
+          } catch (err) {
+            console.warn('Could not parse analysis JSON:', err, jsonText);
+            lastError = 'Could not parse AI response';
+            continue; // Try next model
+          }
+        } else {
+          console.warn('No candidates in response:', result);
+          lastError = 'No response from analysis service';
+          continue; // Try next model
         }
-      } else {
-        setAnalysisResult({ safe: false, interactions: [], recommendations: 'No response from analysis service.' });
+      } catch (error) {
+        console.error(`Error with model ${modelName}:`, error);
+        lastError = error.message || 'Network error';
+        continue; // Try next model
       }
-    } catch (error) {
-      console.error('Error analyzing interactions:', error);
-      setAnalysisResult({ safe: false, interactions: [], recommendations: 'Error analyzing interactions.' });
-    } finally {
-      setIsAnalyzing(false);
     }
+
+    // If we get here, all models failed
+    setAnalysisResult({ 
+      safe: false, 
+      interactions: [], 
+      recommendations: `All models failed. Last error: ${lastError}. Please try again later.` 
+    });
+    setIsAnalyzing(false);
   };
 
   const addMedication = () => {
