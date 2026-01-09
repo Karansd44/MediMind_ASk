@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Powered Healthcare Medicare ASK - Project Documentation</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+        
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #7c3aed;
+            --accent-color: #06b6d4;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --bg-light: #f8fafc;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.7;
+            color: var(--text-primary);
+            background: #ffffff;
+            font-size: 11pt;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 50px;
+        }
+        
+        /* Cover Page */
+        .cover-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px;
+            page-break-after: always;
+        }
+        
+        .cover-page .logo {
+            font-size: 80px;
+            margin-bottom: 30px;
+        }
+        
+        .cover-page h1 {
+            font-size: 36pt;
+            font-weight: 700;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+        
+        .cover-page .subtitle {
+            font-size: 18pt;
+            font-weight: 300;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+        
+        .cover-page .meta {
+            margin-top: 60px;
+            font-size: 12pt;
+            opacity: 0.8;
+        }
+        
+        .cover-page .version {
+            background: rgba(255,255,255,0.2);
+            padding: 8px 20px;
+            border-radius: 20px;
+            margin-top: 20px;
+            font-size: 11pt;
+        }
+        
+        /* Headers */
+        h1 {
+            font-size: 24pt;
+            color: var(--primary-color);
+            margin: 40px 0 20px 0;
+            font-weight: 700;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+        
+        h2 {
+            font-size: 18pt;
+            color: var(--secondary-color);
+            margin: 35px 0 15px 0;
+            font-weight: 600;
+        }
+        
+        h3 {
+            font-size: 14pt;
+            color: var(--text-primary);
+            margin: 25px 0 12px 0;
+            font-weight: 600;
+        }
+        
+        h4 {
+            font-size: 12pt;
+            color: var(--text-secondary);
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+        }
+        
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 15px 0 15px 25px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        li ul, li ol {
+            margin-top: 8px;
+        }
+        
+        /* Code blocks */
+        pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 9pt;
+            line-height: 1.5;
+            margin: 20px 0;
+            border-left: 4px solid var(--accent-color);
+        }
+        
+        code {
+            font-family: 'Fira Code', monospace;
+            background: var(--bg-light);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 9pt;
+            color: var(--secondary-color);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+        
+        /* Architecture diagram styling */
+        .diagram {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 9pt;
+            line-height: 1.4;
+            overflow-x: auto;
+            white-space: pre;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 10pt;
+        }
+        
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px 15px;
+            text-align: left;
+        }
+        
+        th {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: var(--bg-light);
+        }
+        
+        /* Info boxes */
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-left: 4px solid var(--primary-color);
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-left: 4px solid var(--warning-color);
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+        
+        .success-box {
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-left: 4px solid var(--success-color);
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+        
+        /* Section containers */
+        .section {
+            margin: 30px 0;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+        }
+        
+        /* Page breaks */
+        .page-break {
+            page-break-before: always;
+        }
+        
+        /* TOC styling */
+        .toc {
+            background: var(--bg-light);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+        
+        .toc h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+        
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .toc li {
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        
+        .toc li:last-child {
+            border-bottom: none;
+        }
+        
+        .toc a {
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        
+        .toc a:hover {
+            color: var(--primary-color);
+        }
+        
+        /* Tech badge */
+        .tech-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 9pt;
+            margin: 3px;
+            font-weight: 500;
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid var(--border-color);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 10pt;
+        }
+        
+        /* Print styles */
+        @media print {
+            body {
+                font-size: 10pt;
+            }
+            
+            .container {
+                padding: 20px 40px;
+            }
+            
+            pre {
+                font-size: 8pt;
+                page-break-inside: avoid;
+            }
+            
+            .section {
+                page-break-inside: avoid;
+            }
+            
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+        }
+
+        /* Highlight for important points */
+        .highlight {
+            background: linear-gradient(120deg, #fef08a 0%, #fef3c7 100%);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cover Page -->
+    <div class="cover-page">
+        <div class="logo">🏥</div>
+        <h1>AI-Powered Healthcare<br>Medicare ASK</h1>
+        <div class="subtitle">Comprehensive Project Documentation</div>
+        <div class="meta">
+            <p><strong>Project Lead:</strong> Karan</p>
+            <p><strong>Document Version:</strong> 1.0</p>
+            <p><strong>Last Updated:</strong> January 2026</p>
+        </div>
+        <div class="version">Production Ready • v1.0.0</div>
+    </div>
+
+    <div class="container">
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>📋 Table of Contents</h2>
+            <ul>
+                <li><strong>1.</strong> System Architecture Overview</li>
+                <li><strong>2.</strong> Detailed Component Breakdown</li>
+                <li><strong>3.</strong> Authentication Flow</li>
+                <li><strong>4.</strong> Patient User Journey</li>
+                <li><strong>5.</strong> Doctor User Journey</li>
+                <li><strong>6.</strong> Data Storage Architecture</li>
+                <li><strong>7.</strong> AI Integration Architecture</li>
+                <li><strong>8.</strong> Server-Side Architecture</li>
+                <li><strong>9.</strong> Key Technical Implementations</li>
+                <li><strong>10.</strong> Development and Deployment Workflow</li>
+                <li><strong>11.</strong> Feature Roadmap</li>
+                <li><strong>12.</strong> Getting Started</li>
+                <li><strong>13.</strong> Core Technologies</li>
+            </ul>
+        </div>
+
+        <!-- Section 1: System Architecture -->
+        <h1 class="page-break">1. System Architecture Overview</h1>
+        
+        <p>The AI-Powered Healthcare Medicare ASK platform implements a sophisticated multi-tier architecture designed for <span class="highlight">scalability, security, and intelligent health analysis</span>.</p>
+
+        <div class="diagram">
+┌─────────────────────────────────────────┐
+│            CLIENT TIER                  │
+│  ┌─────────────┐       ┌─────────────┐  │
+│  │ Patient UI  │       │ Doctor UI   │  │
+│  │ Components  │       │ Components  │  │
+│  └─────────────┘       └─────────────┘  │
+└─────────────────────────────────────────┘
+              │                 │
+              ▼                 ▼
+┌─────────────────────────────────────────┐
+│            APPLICATION TIER             │
+│  ┌─────────────┐       ┌─────────────┐  │
+│  │ React Router│       │ Context API │  │
+│  │ Navigation  │       │ State Mgmt  │  │
+│  └─────────────┘       └─────────────┘  │
+└─────────────────────────────────────────┘
+              │                 │
+              ▼                 ▼
+┌─────────────────────────────────────────┐
+│            SERVICE TIER                 │
+│  ┌─────────────┐       ┌─────────────┐  │
+│  │ Express.js  │       │ Firebase    │  │
+│  │ API Server  │       │ Services    │  │
+│  └─────────────┘       └─────────────┘  │
+└─────────────────────────────────────────┘
+              │                 │
+              ▼                 ▼
+┌─────────────────────────────────────────┐
+│            EXTERNAL SERVICES            │
+│  ┌─────────────┐       ┌─────────────┐  │
+│  │ Google      │       │ Google Maps │  │
+│  │ Gemini AI   │       │ API         │  │
+│  └─────────────┘       └─────────────┘  │
+└─────────────────────────────────────────┘
+        </div>
+
+        <!-- Section 2: Component Breakdown -->
+        <h1 class="page-break">2. Detailed Component Breakdown</h1>
+
+        <h2>2.1 Frontend Architecture</h2>
+
+        <h3>Core Components Hierarchy</h3>
+        <pre><code>App.js
+├── AuthContext.js (Authentication Provider)
+├── Welcome.js (Landing Page)
+├── Auth Components
+│   ├── Login.js
+│   ├── Register.js
+│   └── ForgotPassword.js
+├── Patient Flow
+│   ├── Dashboard.js
+│   ├── SymptomInput.js
+│   ├── ResultsDisplay.js
+│   ├── HealthHistory.js
+│   ├── MedicationScheduler.js
+│   ├── FollowupDialog.js
+│   └── ProfileView.js
+└── Doctor Flow
+    ├── DoctorDashboard.js
+    ├── PatientDashboardView.js
+    ├── AllPatientRecords.js
+    └── MedicationAccuracyTest.js</code></pre>
+
+        <h3>UI Component Library</h3>
+        <p><strong>UIComponents.js</strong> contains reusable UI elements such as:</p>
+        <ul>
+            <li>Cards with consistent styling and animation</li>
+            <li>Buttons with different states (primary, secondary, danger)</li>
+            <li>Tags for status indicators (severity, urgency)</li>
+            <li>Progress indicators (linear and circular)</li>
+            <li>Modal dialogs with standardized behaviors</li>
+        </ul>
+
+        <h3>Animation System</h3>
+        <p>The application uses <strong>Framer Motion</strong> for sophisticated animations:</p>
+        <ul>
+            <li>Page transitions with staggered element reveals</li>
+            <li>Interactive UI elements with microinteractions</li>
+            <li>Data visualization animations for better comprehension</li>
+            <li>Loading states with animated indicators</li>
+        </ul>
+
+        <!-- Section 3: Authentication -->
+        <h1 class="page-break">3. Authentication Flow</h1>
+
+        <div class="diagram">
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│ Landing Page │────▶│ Registration │────▶│User Type     │
+└──────────────┘     │ Form         │     │Selection     │
+       │             └──────────────┘     └──────────────┘
+       │                                         │
+       ▼                                         ▼
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│ Login Page   │────▶│ Auth Context │────▶│ Firebase     │
+└──────────────┘     │ Update       │     │ Authentication│
+       ▲             └──────────────┘     └──────────────┘
+       │                                         │
+       │             ┌──────────────┐            │
+       └─────────────│ Password     │◀───────────┘
+                     │ Reset Flow   │
+                     └──────────────┘
+        </div>
+
+        <h2>3.1 Registration Process</h2>
+        <ol>
+            <li>Email validation with format checking</li>
+            <li>Password strength requirements (8+ chars, special chars, numbers)</li>
+            <li>User type selection (patient/doctor)</li>
+            <li>Profile creation with demographic information</li>
+            <li>Terms of service acceptance</li>
+            <li>Email verification</li>
+        </ol>
+
+        <h2>3.2 Login Options</h2>
+        <ol>
+            <li>Email/password authentication</li>
+            <li>Google OAuth integration</li>
+            <li>Apple ID authentication</li>
+            <li>"Remember me" functionality</li>
+            <li>Automatic session renewal</li>
+        </ol>
+
+        <h2>3.3 Security Features</h2>
+        <div class="success-box">
+            <strong>🔒 Security Implementation:</strong>
+            <ul>
+                <li>JWT token management with auto-refresh</li>
+                <li>Session timeout after inactivity</li>
+                <li>Secure credential storage</li>
+                <li>CSRF protection</li>
+                <li>Rate limiting on authentication attempts</li>
+            </ul>
+        </div>
+
+        <!-- Section 4: Patient Journey -->
+        <h1 class="page-break">4. Patient User Journey</h1>
+
+        <div class="diagram">
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│ Dashboard    │────▶│ Symptom      │────▶│ AI Analysis  │
+│ Overview     │     │ Input        │     │ Processing   │
+└──────────────┘     └──────────────┘     └──────────────┘
+       ▲                                         │
+       │                                         ▼
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│ Health       │◀────│ Results      │◀────│ Diagnosis    │
+│ History      │     │ Display      │     │ Generation   │
+└──────────────┘     └──────────────┘     └──────────────┘
+       ▲                    │
+       │                    ▼
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│ Medication   │◀────│ Provider     │────▶│ Followup     │
+│ Scheduler    │     │ Finder       │     │ Scheduler    │
+└──────────────┘     └──────────────┘     └──────────────┘
+        </div>
+
+        <h2>4.1 Dashboard Initial Experience</h2>
+        <ul>
+            <li>Personalized greeting based on time of day and user profile</li>
+            <li>Health status summary with color-coded indicators</li>
+            <li>Recent analysis summaries with severity indicators</li>
+            <li>Quick access to common functions (new analysis, medication schedule)</li>
+            <li>Health metrics visualization with trend indicators</li>
+        </ul>
+
+        <h2>4.2 Symptom Analysis Process</h2>
+        
+        <h3>Input Methods</h3>
+        <ul>
+            <li>Text input with real-time NLP processing</li>
+            <li>Voice recording with speech-to-text conversion</li>
+            <li>Body diagram for location-specific symptoms</li>
+            <li>Symptom duration and severity sliders</li>
+        </ul>
+
+        <h3>Analysis Execution</h3>
+        <ul>
+            <li>Symptom normalization and medical terminology mapping</li>
+            <li>Google Gemini AI processing with medical knowledge base</li>
+            <li>Confidence scoring algorithm for potential diagnoses</li>
+            <li>Severity assessment based on symptom combination</li>
+            <li>Contextual analysis based on user medical history</li>
+        </ul>
+
+        <h2>4.3 Results Presentation</h2>
+        <div class="info-box">
+            <strong>📊 Diagnosis Output Includes:</strong>
+            <ul>
+                <li>Primary diagnosis with confidence percentage</li>
+                <li>Alternative diagnoses with comparative likelihood</li>
+                <li>Severity indicators (mild, moderate, severe, critical)</li>
+                <li>Recommended actions based on severity</li>
+                <li>Educational content about the condition</li>
+            </ul>
+        </div>
+
+        <h3>Recommended Actions Based on Severity</h3>
+        <ul>
+            <li><strong>Mild:</strong> Self-care instructions</li>
+            <li><strong>Moderate:</strong> Telehealth consultations</li>
+            <li><strong>Severe:</strong> Urgent care recommendations</li>
+            <li><strong>Critical:</strong> Emergency services</li>
+        </ul>
+
+        <h2>4.4 Healthcare Provider Recommendations</h2>
+        <ul>
+            <li>Location-based specialist finder using Google Maps API</li>
+            <li>Filtering by expertise, distance, availability, and insurance</li>
+            <li>Direct contact options (call, website, directions)</li>
+            <li>Appointment booking assistance</li>
+        </ul>
+
+        <h2>4.5 Follow-up Management</h2>
+        <ul>
+            <li>Automated follow-up scheduling based on diagnosis severity</li>
+            <li>Symptom tracking with comparative analysis</li>
+            <li>Recovery timeline visualization</li>
+            <li>Medication compliance tracking</li>
+            <li>Appointment reminders</li>
+        </ul>
+
+        <!-- Section 5: Doctor Journey -->
+        <h1 class="page-break">5. Doctor User Journey</h1>
+
+        <div class="diagram">
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│ Doctor       │────▶│ Patient List │────▶│ Patient      │
+│ Dashboard    │     │ View         │     │ Details View │
+└──────────────┘     └──────────────┘     └──────────────┘
+       │                                         │
+       ▼                                         ▼
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│ Critical     │     │ Analysis     │     │ Treatment    │
+│ Cases Alert  │     │ Review       │     │ Planning     │
+└──────────────┘     └──────────────┘     └──────────────┘
+                            │                    │
+                            ▼                    ▼
+                     ┌──────────────┐     ┌──────────────┐
+                     │ Clinical     │     │ Follow-up    │
+                     │ Notes        │     │ Scheduling   │
+                     └──────────────┘     └──────────────┘
+        </div>
+
+        <h2>5.1 Doctor Dashboard</h2>
+        <ul>
+            <li>Practice overview with key metrics:
+                <ul>
+                    <li>Total patients under care</li>
+                    <li>New patients in last 30 days</li>
+                    <li>Pending reviews requiring attention</li>
+                    <li>Critical cases requiring immediate action</li>
+                </ul>
+            </li>
+            <li>Patient activity timeline</li>
+            <li>Upcoming appointments calendar</li>
+            <li>Recent analyses requiring review</li>
+        </ul>
+
+        <h2>5.2 Patient Management</h2>
+        <ul>
+            <li>Comprehensive patient list with search and filter options</li>
+            <li>Filter by condition severity, last visit date, pending actions</li>
+            <li>Search by name, ID, or condition</li>
+            <li>Patient summary cards with key health indicators</li>
+            <li>Color-coded status indicators</li>
+        </ul>
+
+        <h2>5.3 Patient Detail View</h2>
+        <ul>
+            <li>Complete medical history timeline</li>
+            <li>All previous AI analyses with doctor annotations</li>
+            <li>Medication history and current prescriptions</li>
+            <li>Vital statistics with trend visualization</li>
+            <li>Treatment plan documentation</li>
+            <li>Communication history</li>
+        </ul>
+
+        <h2>5.4 Analysis Review Process</h2>
+        <ul>
+            <li>AI diagnosis verification workflow</li>
+            <li>Ability to confirm, modify, or reject AI conclusions</li>
+            <li>Comparative view of symptoms and diagnoses</li>
+            <li>Medical reference integration for evidence-based decisions</li>
+            <li>Decision support with similar case outcomes</li>
+        </ul>
+
+        <h2>5.5 Treatment Planning</h2>
+        <ul>
+            <li>Structured treatment plan creation</li>
+            <li>Medication prescription system with:
+                <ul>
+                    <li>Dosage recommendations</li>
+                    <li>Interaction checking</li>
+                    <li>Allergy verification</li>
+                    <li>Electronic prescription capabilities</li>
+                </ul>
+            </li>
+            <li>Follow-up scheduling assistant</li>
+            <li>Patient education material selection</li>
+        </ul>
+
+        <!-- Section 6: Data Storage -->
+        <h1 class="page-break">6. Data Storage Architecture</h1>
+
+        <pre><code>Firebase Firestore
+│
+├── users/
+│   └── {userId}/
+│       ├── profile
+│       │   ├── personalInfo
+│       │   ├── medicalHistory
+│       │   └── preferences
+│       │
+│       ├── analyses/
+│       │   └── {analysisId}/
+│       │       ├── symptoms
+│       │       ├── diagnoses
+│       │       ├── severity
+│       │       ├── recommendations
+│       │       └── doctorNotes
+│       │
+│       └── medications/
+│           └── {medicationId}/
+│               ├── name
+│               ├── dosage
+│               ├── schedule
+│               └── adherenceData
+│
+├── doctors/
+│   └── {doctorId}/
+│       ├── profile
+│       ├── patients
+│       └── availability
+│
+└── analytics/
+    ├── symptomFrequency
+    ├── diagnosisAccuracy
+    └── userEngagement</code></pre>
+
+        <h2>6.1 Data Security Implementation</h2>
+        <div class="warning-box">
+            <strong>🔐 Security Measures:</strong>
+            <ul>
+                <li>Field-level encryption for sensitive medical data</li>
+                <li>Hierarchical access control with role-based permissions</li>
+                <li>HIPAA-compliant data storage practices</li>
+                <li>Automatic data backup with versioning</li>
+                <li>Data retention policies with compliant purging</li>
+            </ul>
+        </div>
+
+        <!-- Section 7: AI Integration -->
+        <h1 class="page-break">7. AI Integration Architecture</h1>
+
+        <p>The application leverages <strong>Google Gemini AI</strong> through a multi-stage integration process:</p>
+
+        <h2>7.1 Preprocessing Layer</h2>
+        <ul>
+            <li>Medical terminology normalization</li>
+            <li>Symptom extraction and classification</li>
+            <li>Patient history contextual enrichment</li>
+            <li>Query optimization for medical context</li>
+        </ul>
+
+        <h2>7.2 AI Processing</h2>
+        <ul>
+            <li>Secure API communication with Google Gemini</li>
+            <li>Prompt engineering specific to medical diagnosis</li>
+            <li>Medical knowledge base integration</li>
+            <li>Confidence scoring algorithms</li>
+        </ul>
+
+        <h2>7.3 Postprocessing Layer</h2>
+        <ul>
+            <li>Result validation against medical guidelines</li>
+            <li>Severity classification based on symptom combinations</li>
+            <li>Action recommendation generation</li>
+            <li>Educational content matching</li>
+        </ul>
+
+        <h2>7.4 Learning System</h2>
+        <div class="info-box">
+            <strong>🤖 Continuous Improvement:</strong>
+            <ul>
+                <li>Feedback loop from doctor confirmations/corrections</li>
+                <li>Continuous model improvement based on validated outcomes</li>
+                <li>Region-specific adaptation for local health trends</li>
+                <li>Seasonal health pattern recognition</li>
+            </ul>
+        </div>
+
+        <!-- Section 8: Server Architecture -->
+        <h1 class="page-break">8. Server-Side Architecture</h1>
+
+        <p>The Express.js server (<code>server.js</code>) handles several critical functions:</p>
+
+        <h2>8.1 API Gateway</h2>
+        <ul>
+            <li>Authentication middleware with JWT validation</li>
+            <li>Rate limiting for API abuse prevention</li>
+            <li>Request logging for audit trails</li>
+            <li>Error handling with structured responses</li>
+        </ul>
+
+        <h2>8.2 External Service Integration</h2>
+        <ul>
+            <li>Google Maps API proxy to protect API keys</li>
+            <li>Google Gemini AI secure communication</li>
+            <li>HTTPS enforcement for all communications</li>
+            <li>Timeout handling for external service failures</li>
+        </ul>
+
+        <h2>8.3 Data Processing</h2>
+        <ul>
+            <li>Request validation and sanitization</li>
+            <li>Response formatting and standardization</li>
+            <li>Caching layer for performance optimization</li>
+            <li>Compression for bandwidth efficiency</li>
+        </ul>
+
+        <!-- Section 9: Technical Implementations -->
+        <h1 class="page-break">9. Key Technical Implementations</h1>
+
+        <h2>9.1 Responsive UI Implementation</h2>
+        <p>The application uses a sophisticated responsive design system:</p>
+        <ul>
+            <li>Mobile-first approach with progressive enhancement</li>
+            <li>Breakpoint system:
+                <ul>
+                    <li><strong>Mobile:</strong> &lt; 640px</li>
+                    <li><strong>Tablet:</strong> 641px - 1024px</li>
+                    <li><strong>Desktop:</strong> &gt; 1024px</li>
+                </ul>
+            </li>
+            <li>Layout adaptations:
+                <ul>
+                    <li>Stacked cards on mobile</li>
+                    <li>Grid layouts on larger screens</li>
+                    <li>Collapsible sections for complex data</li>
+                    <li>Touch-optimized controls on mobile</li>
+                </ul>
+            </li>
+        </ul>
+
+        <h2>9.2 Performance Optimizations</h2>
+        <ul>
+            <li>React component memoization for expensive renders</li>
+            <li>Dynamic code splitting based on user roles</li>
+            <li>Image optimization with lazy loading</li>
+            <li>Critical CSS inlining for fast initial render</li>
+            <li>Service worker implementation for offline capability</li>
+            <li>Firebase query optimization with compound indices</li>
+            <li>React.lazy and Suspense for component-level code splitting</li>
+        </ul>
+
+        <h2>9.3 Accessibility Features</h2>
+        <div class="success-box">
+            <strong>♿ Accessibility Compliance:</strong>
+            <ul>
+                <li>ARIA attributes throughout the interface</li>
+                <li>Keyboard navigation support</li>
+                <li>Screen reader compatibility</li>
+                <li>Color contrast compliance with WCAG standards</li>
+                <li>Focus management for modal dialogs</li>
+                <li>Alternative text for all images and icons</li>
+                <li>Semantic HTML structure</li>
+            </ul>
+        </div>
+
+        <h2>9.4 Testing Infrastructure</h2>
+        <ul>
+            <li>Unit tests for individual components</li>
+            <li>Integration tests for component interactions</li>
+            <li>End-to-end tests for critical user journeys</li>
+            <li>Accessibility testing with automated tools</li>
+            <li>Performance testing with Lighthouse benchmarks</li>
+            <li>Security testing for authentication and data handling</li>
+        </ul>
+
+        <!-- Section 10: Development Workflow -->
+        <h1 class="page-break">10. Development and Deployment Workflow</h1>
+
+        <div class="diagram">
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│ Local Dev    │────▶│ Component    │────▶│ Feature      │
+│ Environment  │     │ Development  │     │ Integration  │
+└──────────────┘     └──────────────┘     └──────────────┘
+                                                 │
+┌──────────────┐     ┌──────────────┐            │
+│ Production   │◀────│ Staging      │◀───────────┘
+│ Deployment   │     │ Environment  │
+└──────────────┘     └──────────────┘
+        </div>
+
+        <h2>10.1 Local Development</h2>
+        <ul>
+            <li>React development server with hot reloading</li>
+            <li>Firebase emulator suite for offline development</li>
+            <li>Environment-specific configuration management</li>
+            <li>Component storybook for isolated development</li>
+        </ul>
+
+        <h2>10.2 CI/CD Pipeline</h2>
+        <ul>
+            <li>Automated testing on pull requests</li>
+            <li>Build optimization for production deployment</li>
+            <li>Environment-specific configuration injection</li>
+            <li>Automated staging environment deployments</li>
+        </ul>
+
+        <h2>10.3 Deployment Strategy</h2>
+        <ul>
+            <li>Firebase hosting for frontend assets</li>
+            <li>Cloud Functions for serverless backend operations</li>
+            <li>Content delivery network integration</li>
+            <li>Database migration management</li>
+        </ul>
+
+        <!-- Section 11: Feature Roadmap -->
+        <h1 class="page-break">11. Feature Roadmap and Future Enhancements</h1>
+
+        <h2>11.1 Enhanced AI Capabilities</h2>
+        <ul>
+            <li>Symptom image analysis for visual diagnoses</li>
+            <li>Vital sign monitoring integration</li>
+            <li>Wearable device data incorporation</li>
+            <li>Natural language conversation for symptom gathering</li>
+        </ul>
+
+        <h2>11.2 Telehealth Integration</h2>
+        <ul>
+            <li>Direct video consultation scheduling</li>
+            <li>Secure messaging system between patients and providers</li>
+            <li>Virtual waiting room implementation</li>
+            <li>Digital prescription delivery</li>
+        </ul>
+
+        <h2>11.3 Advanced Analytics</h2>
+        <ul>
+            <li>Population health trending</li>
+            <li>Predictive analytics for health outcomes</li>
+            <li>Geographic health pattern visualization</li>
+            <li>Treatment efficacy analysis</li>
+        </ul>
+
+        <h2>11.4 Expanded Provider Network</h2>
+        <ul>
+            <li>Integration with electronic health record systems</li>
+            <li>Provider credentialing and verification system</li>
+            <li>Patient review and rating platform</li>
+            <li>Insurance coverage verification</li>
+        </ul>
+
+        <!-- Section 12: Getting Started -->
+        <h1 class="page-break">12. Getting Started</h1>
+
+        <h2>12.1 Prerequisites</h2>
+        <ul>
+            <li>Node.js (v16+)</li>
+            <li>Firebase account</li>
+            <li>Google Cloud Platform account for API access</li>
+        </ul>
+
+        <h2>12.2 Installation</h2>
+        <ol>
+            <li><strong>Clone the repository:</strong>
+                <pre><code>git clone https://github.com/Karansd44/AI-Powered-Healthcare-Medicare-ASK-.git
+cd my-health-app</code></pre>
+            </li>
+            <li><strong>Install dependencies:</strong>
+                <pre><code>npm install</code></pre>
+            </li>
+            <li><strong>Set up environment variables:</strong>
+                <ul>
+                    <li>Create a <code>.env</code> file based on <code>.env.example</code></li>
+                    <li>Add your Firebase configuration</li>
+                    <li>Add your Google API keys</li>
+                </ul>
+            </li>
+            <li><strong>Run the development server:</strong>
+                <pre><code>npm run dev</code></pre>
+            </li>
+        </ol>
+
+        <h2>12.3 Available Scripts</h2>
+        <table>
+            <tr>
+                <th>Command</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><code>npm start</code></td>
+                <td>Runs the React app in development mode</td>
+            </tr>
+            <tr>
+                <td><code>npm run build</code></td>
+                <td>Builds the app for production</td>
+            </tr>
+            <tr>
+                <td><code>npm run server</code></td>
+                <td>Runs the Express server only</td>
+            </tr>
+            <tr>
+                <td><code>npm run dev</code></td>
+                <td>Runs both React app and Express server concurrently</td>
+            </tr>
+        </table>
+
+        <!-- Section 13: Core Technologies -->
+        <h1 class="page-break">13. Core Technologies</h1>
+
+        <div class="section">
+            <h3>Frontend</h3>
+            <span class="tech-badge">React.js 18.2.0</span>
+            <span class="tech-badge">React Router v7.8.1</span>
+            <span class="tech-badge">Framer Motion</span>
+            <span class="tech-badge">Tailwind CSS</span>
+            <span class="tech-badge">Chart.js</span>
+            <span class="tech-badge">Recharts</span>
+        </div>
+
+        <div class="section">
+            <h3>Backend & Services</h3>
+            <span class="tech-badge">Express.js 5.1.0</span>
+            <span class="tech-badge">Firebase Firestore</span>
+            <span class="tech-badge">Firebase Auth</span>
+            <span class="tech-badge">Google Gemini AI</span>
+            <span class="tech-badge">Google Maps API</span>
+        </div>
+
+        <div class="section">
+            <h3>State Management</h3>
+            <span class="tech-badge">React Context API</span>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>AI-Powered Healthcare Medicare ASK</strong></p>
+            <p>Project Lead: Karan | Version 1.0 | January 2026</p>
+            <p>© 2026 All Rights Reserved</p>
+        </div>
+    </div>
+</body>
+</html>

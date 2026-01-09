@@ -119,7 +119,7 @@ function MediMindAppContent() {
 
   useEffect(() => {
     if (window.location.pathname === '/') {
-      document.title = 'NLP Based Health Analysis';
+      document.title = 'MediMind ASK';
       setShowHeart(true);
     } else {
       document.title = 'MediMind ASK';
@@ -213,6 +213,8 @@ CRITICAL REQUIREMENTS:
 - Return ONLY valid JSON, no markdown
 - Make descriptions comprehensive and educational`;
 
+    let predictionsToStore = [];
+
     try {
       let chatHistory = [];
       chatHistory.push({ role: "user", parts: [{ text: prompt }] });
@@ -292,7 +294,7 @@ CRITICAL REQUIREMENTS:
         hasParts: !!result.candidates?.[0]?.content?.parts
       });
 
-      let predictionsToStore = [];
+      predictionsToStore = [];
       if (result.candidates && result.candidates.length > 0 &&
         result.candidates[0].content && result.candidates[0].content.parts &&
         result.candidates[0].content.parts.length > 0) {
